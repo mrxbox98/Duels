@@ -11,6 +11,8 @@ public class DuelsPlugin extends JavaPlugin {
 
     public static Kits kits;
 
+    public static Arena arena;
+
     @Override
     public void onEnable()
     {
@@ -25,6 +27,14 @@ public class DuelsPlugin extends JavaPlugin {
 
         kits = Kits.getKits();
         getLogger().info(new Gson().toJson(kits));
+
+        arena = Arena.getArena();
+        getLogger().info(new Gson().toJson(arena));
+
+        getCommand("duels").setExecutor(new CommandHandler());
+        getCommand("duel").setExecutor(new CommandHandler());
+        getCommand("stats").setExecutor(new CommandHandler());
+        getCommand("accept").setExecutor(new CommandHandler());
     }
 
     @Override

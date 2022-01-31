@@ -2,24 +2,22 @@ package me.mrxbox98.duels;
 
 import me.mrxbox98.duels.kit.Item;
 import me.mrxbox98.duels.kit.Kit;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.apache.commons.io.FileUtils;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.w3c.dom.events.Event;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Duel implements Listener {
 
@@ -48,6 +46,8 @@ public class Duel implements Listener {
 
     public Kit kit;
 
+    public World world;
+
     public Duel(Player inviter, Player invited)
     {
         this.inviter=inviter;
@@ -58,24 +58,72 @@ public class Duel implements Listener {
         this.oldInvitedInventory=invited.getInventory();
         state=0;
         kit=DuelsPlugin.kits.getDefaultKit();
-        DuelsPlugin.instance.getServer().getPluginManager().registerEvents(this, (JavaPlugin)DuelsPlugin.getInstance());
-        loadInventories();
+        DuelsPlugin.instance.getServer().getPluginManager().registerEvents(this, DuelsPlugin.getInstance());
 
         duels.add(this);
+
+        inviter.sendMessage(ChatColor.GREEN+"You have invited "+invited.getName()+" to a duel!");
+        invited.sendMessage(ChatColor.GREEN+"You have been invited to a duel by "+inviter.getName()+"!");
+
+        Bukkit.getScheduler().runTaskLater(DuelsPlugin.getInstance(), this::timeout, 60000L);
+    }
+
+    public void timeout()
+    {
+        inviter.sendMessage(ChatColor.RED+"The duel has timed out!");
+
+        HandlerList.unregisterAll(this);
+
+        duels.remove(this);
+    }
+
+    public static World cloneWorld(World world)
+    {
+        File dir = new File(Bukkit.getServer().getWorldContainer(), world.getName());
+
+        String fileName = world.getName()+UUID.randomUUID();
+
+        try {
+            FileUtils.copyDirectory(dir, new File(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (File file : new File(fileName).listFiles())
+        {
+            if (file.isFile())
+            {
+                if (file.getName().equalsIgnoreCase("uid.dat"))
+                {
+                    file.delete();
+                }
+            }
+        }
+
+        return Bukkit.getServer().createWorld(new WorldCreator(fileName));
     }
 
     public void acceptDuel()
     {
         state=1;
-        inviter.teleport(invited.getLocation());
-        invited.teleport(inviter.getLocation());
         loadInventories();
         startDuel();
+
+        world = cloneWorld(Bukkit.getWorld(DuelsPlugin.arena.world));
+
+        Location loc = new Location(world, DuelsPlugin.arena.x, DuelsPlugin.arena.y, DuelsPlugin.arena.z);
+
+        inviter.teleport(loc);
+        invited.teleport(loc);
     }
 
     public void startDuel()
     {
         state=2;
+
+        invited.sendMessage(ChatColor.GREEN+"5 seconds until the duel starts!");
+        inviter.sendMessage(ChatColor.GREEN+"5 seconds until the duel starts!");
+
         Bukkit.getScheduler().runTaskLater(DuelsPlugin.getInstance(), this::startFighting, 5000L);
     }
 
@@ -166,5 +214,27 @@ public class Duel implements Listener {
         invited.teleport(oldInvitedLocation);
         inviter.getInventory().setContents(oldInviterInventory.getContents());
         invited.getInventory().setContents(oldInvitedInventory.getContents());
+
+
+        File dir = new File(Bukkit.getServer().getWorldContainer(), world.getName());
+        //delete world
+        Bukkit.getServer().unloadWorld(world, false);
+
+        try {
+            FileUtils.deleteDirectory(dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void accept(Player player, Player player2)
+    {
+        for(Duel duel: duels)
+        {
+            if(duel.inviter.getUniqueId().equals(player2.getUniqueId()) && duel.invited.getUniqueId().equals(player.getUniqueId()))
+            {
+                duel.acceptDuel();
+            }
+        }
     }
 }

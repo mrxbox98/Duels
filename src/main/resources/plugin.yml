@@ -1,7 +1,20 @@
 name: Duels
 version: 1.0.0
 main: me.mrxbox98.duels.DuelsPlugin
+api-version: 1.17
 commands:
-  help:
+  duels:
     description: Gets the plugins information and commands.
     usage: "Usage: /duels help"
+
+  duel:
+    description: Starts a duel.
+    usage: "Usage: /duel <player> [kit]"
+
+  stats:
+    description: Gets the stats of a player.
+    usage: "Usage: /stats <player>"
+
+  accept:
+    description: Accepts a duel.
+    usage: "Usage: /accept <name>"

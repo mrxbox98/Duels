@@ -1,5 +1,7 @@
 package me.mrxbox98.duels;
 
+import org.bukkit.ChatColor;
+
 import java.sql.*;
 
 public class Data {
@@ -57,7 +59,8 @@ public class Data {
         {
             //Get wins
 
-            return "Wins: " +
+            return ChatColor.GREEN +
+                    "Wins: " +
                     resultSet.getInt(2) +
                     "\n" +
 

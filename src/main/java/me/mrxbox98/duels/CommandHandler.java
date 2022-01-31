@@ -15,59 +15,74 @@ public class CommandHandler implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, String[] strings) {
         if(command.getName().equalsIgnoreCase("duels"))
         {
+            commandSender.sendMessage("---- Duels Help ----");
+            commandSender.sendMessage("/help - Prints this message");
+            commandSender.sendMessage("/duel <name> [kit] - Duel another player");
+            commandSender.sendMessage("/stats [name] - Gets the statistics of you or another player");
+            commandSender.sendMessage("/accept <name> - Accept a duel request");
+            return true;
+        }
+        if(command.getName().equalsIgnoreCase("stats"))
+        {
             if(strings.length==0)
             {
-                commandSender.sendMessage("---- Duels Help ----");
-                commandSender.sendMessage("/help - Prints this message");
-                commandSender.sendMessage("/duel <name> [kit] - Duel another player");
-                commandSender.sendMessage("/stats [name] - Gets the statistics of you or another player");
-                commandSender.sendMessage("/accept <name> - Accept a duel request");
-                return true;
-            }
-            switch(strings[0].toLowerCase())
-            {
-                case "stats":
+                if(commandSender instanceof ConsoleCommandSender)
                 {
-                    if(strings.length==1)
-                    {
-                        if(commandSender instanceof ConsoleCommandSender)
-                        {
-                            commandSender.sendMessage("This command needs a player name if executed through the console!");
-                            return true;
-                        }
-                        else
-                        {
-                            Player player = (Player) commandSender;
+                    commandSender.sendMessage("This command needs a player name if executed through the console!");
+                    return true;
+                }
+                else
+                {
+                    Player player = (Player) commandSender;
 
-                            try {
-                                player.sendMessage(Data.stats(player.getUniqueId().toString()));
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-
-                            return true;
-                        }
+                    try {
+                        player.sendMessage(Data.stats(player.getUniqueId().toString()));
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
-                    else
-                    {
-                        String uuid = getUUID(strings[1]);
-                        if(uuid==null)
-                        {
-                            commandSender.sendMessage("This player is not online!");
-                            return true;
-                        }
-                        Player player = (Player) commandSender;
 
-                        try {
-                            player.sendMessage(Data.stats(player.getUniqueId().toString()));
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-
-                        return true;
-                    }
+                    return true;
                 }
             }
+            else
+            {
+                String uuid = getUUID(strings[0]);
+                if(uuid==null)
+                {
+                    commandSender.sendMessage("This player is not online!");
+                    return true;
+                }
+                Player player = (Player) commandSender;
+
+                try {
+                    player.sendMessage(Data.stats(player.getUniqueId().toString()));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                return true;
+            }
+        }
+        if(command.getName().equalsIgnoreCase("accept"))
+        {
+            if(commandSender instanceof ConsoleCommandSender || strings.length==0)
+            {
+                return false;
+            }
+            Player player = (Player) commandSender;
+
+            Player player1=null;
+
+            for(Player p: DuelsPlugin.getInstance().getServer().getOnlinePlayers())
+            {
+                if(p.getName().equalsIgnoreCase(strings[0]))
+                {
+                    player1=p;
+                }
+            }
+
+            Duel.accept(player, player1);
+            return true;
         }
         return true;
     }
