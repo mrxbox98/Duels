@@ -1,5 +1,6 @@
 package me.mrxbox98.duels;
 
+import com.google.gson.Gson;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
@@ -7,6 +8,8 @@ import java.sql.SQLException;
 public class DuelsPlugin extends JavaPlugin {
 
     public static DuelsPlugin instance;
+
+    public static Kits kits;
 
     @Override
     public void onEnable()
@@ -19,6 +22,9 @@ public class DuelsPlugin extends JavaPlugin {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        kits = Kits.getKits();
+        getLogger().info(new Gson().toJson(kits));
     }
 
     @Override
