@@ -2,6 +2,8 @@ package me.mrxbox98.duels;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.SQLException;
+
 public class DuelsPlugin extends JavaPlugin {
 
     public static DuelsPlugin instance;
@@ -11,6 +13,12 @@ public class DuelsPlugin extends JavaPlugin {
     {
         instance = this;
         getLogger().info("Started Duels v1.0.0!");
+        saveDefaultConfig();
+        try {
+            Data.setupDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -8,14 +8,21 @@ public class Data {
 
     public static void setupDatabase() throws SQLException {
         database = DriverManager.getConnection("jdbc:mysql://"
-                + Config.getConfig().getString("mysql.host")
-                + ":" + Config.getConfig().getString("mysql.port")
-                + "/" + Config.getConfig().getString("mysql.database"),
-                Config.getConfig().getString("mysql.username"),
-                Config.getConfig().getString("mysql.password"));
+                + Config.getConfig().getString("mysqlHost")
+                + ":" + Config.getConfig().getString("mysqlPort")
+                + "/" + Config.getConfig().getString("mysqlDatabase"),
+                Config.getConfig().getString("mysqlUsername"),
+                Config.getConfig().getString("mysqlPassword"));
 
-        if(database.prepareStatement("SELECT * FROM duel_data").executeQuery().next()) {
+        //Checks if the table exists
+        try
+        {
+            database.prepareStatement("SELECT * FROM duel_data").executeQuery().next();
             return;
+        }
+        catch (Exception ignored)
+        {
+
         }
 
         database.prepareStatement("CREATE TABLE duel_data (uuid VARCHAR(36), wins INT, losses INT, kills INT, deaths INT);").execute();
