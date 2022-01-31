@@ -1,0 +1,7 @@
+name: Duels
+version: 1.0.0
+main: me.mrxbox98.duels.DuelsPlugin
+commands:
+  help:
+    description: Gets the plugins information and commands.
+    usage: "Usage: /duels help"
