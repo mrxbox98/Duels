@@ -1,5 +1,6 @@
 package me.mrxbox98.duels;
 
+import me.mrxbox98.duels.kit.Kit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -84,6 +85,56 @@ public class CommandHandler implements CommandExecutor {
             Duel.accept(player, player1);
             return true;
         }
+        if(command.getName().equalsIgnoreCase("duel"))
+        {
+            if(commandSender instanceof ConsoleCommandSender || strings.length==0)
+            {
+                return false;
+            }
+            Player player = getPlayer(strings[0]);
+
+            if(player==null)
+            {
+                commandSender.sendMessage("This player is not online!");
+                return true;
+            }
+            if(strings.length==1)
+            {
+                if(Duel.hasDuel((Player) commandSender, player))
+                {
+                    commandSender.sendMessage("You already have a duel request!");
+                    return true;
+                }
+                new Duel((Player) commandSender, player);
+            }
+            else
+            {
+                Kit kit=null;
+
+                for(Kit kit1: Kits.getKits().kits)
+                {
+                    if(kit1.name.equalsIgnoreCase(strings[1]))
+                    {
+                        kit=kit1;
+                    }
+                }
+
+                if(kit==null)
+                {
+                    commandSender.sendMessage("This kit is invalid!");
+                }
+                else
+                {
+                    if(Duel.hasDuel((Player) commandSender, player))
+                    {
+                        commandSender.sendMessage("You already have a duel request!");
+                        return true;
+                    }
+                    new Duel((Player) commandSender, player, kit);
+                }
+            }
+            return true;
+        }
         return true;
     }
 
@@ -94,6 +145,18 @@ public class CommandHandler implements CommandExecutor {
             if(player.getName().equalsIgnoreCase(playerName))
             {
                 return player.getUniqueId().toString();
+            }
+        }
+        return null;
+    }
+
+    public static Player getPlayer(String playerName)
+    {
+        for(Player player: DuelsPlugin.instance.getServer().getOnlinePlayers())
+        {
+            if(player.getName().equalsIgnoreCase(playerName))
+            {
+                return player;
             }
         }
         return null;

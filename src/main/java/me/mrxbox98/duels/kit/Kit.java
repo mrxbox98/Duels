@@ -19,7 +19,7 @@ public class Kit {
 
     public ItemStack getHelmet()
     {
-        if(!armorContent.containsKey("helmet"))
+        if(!armorContent.containsKey("helmet") || armorContent.get("helmet")==null)
         {
             return null;
         }
@@ -31,7 +31,7 @@ public class Kit {
 
     public ItemStack getChestplate()
     {
-        if(!armorContent.containsKey("chestplate"))
+        if(!armorContent.containsKey("chestplate") || armorContent.get("chestplate")==null)
         {
             return null;
         }
@@ -43,7 +43,7 @@ public class Kit {
 
     public ItemStack getLeggings()
     {
-        if(!armorContent.containsKey("leggings"))
+        if(!armorContent.containsKey("leggings") || armorContent.get("leggings")==null)
         {
             return null;
         }
@@ -55,7 +55,7 @@ public class Kit {
 
     public ItemStack getBoots()
     {
-        if(!armorContent.containsKey("boots"))
+        if(!armorContent.containsKey("boots") || armorContent.get("boots")==null)
         {
             return null;
         }

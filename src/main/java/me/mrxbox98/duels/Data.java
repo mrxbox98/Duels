@@ -50,6 +50,24 @@ public class Data {
         database.prepareStatement("UPDATE duel_data SET deaths = deaths + 1 WHERE uuid = '" + looser + "';").execute();
     }
 
+    public static void duelWonWithoutKill(String winner, String looser) throws SQLException {
+        //Insert players into database if they are not there already
+        //Insert winner into database
+        if(!database.prepareStatement("SELECT * FROM duel_data WHERE uuid = '" + winner + "'").executeQuery().next()) {
+            database.prepareStatement("INSERT INTO duel_data (uuid, wins, losses, kills, deaths) VALUES ('" + winner + "', 0, 0, 0, 0);").execute();
+        }
+
+        //Insert looser into database
+        if(!database.prepareStatement("SELECT * FROM duel_data WHERE uuid = '" + looser + "'").executeQuery().next()) {
+            database.prepareStatement("INSERT INTO duel_data (uuid, wins, losses, kills, deaths) VALUES ('" + looser + "', 0, 0, 0, 0);").execute();
+        }
+
+        //Update their values
+        database.prepareStatement("UPDATE duel_data SET wins = wins + 1 WHERE uuid = '" + winner + "';").execute();
+        database.prepareStatement("UPDATE duel_data SET losses = losses + 1 WHERE uuid = '" + looser + "';").execute();
+        database.prepareStatement("UPDATE duel_data SET deaths = deaths + 1 WHERE uuid = '" + looser + "';").execute();
+    }
+
     public static String stats(String uuid) throws SQLException {
         PreparedStatement preparedStatement = database.prepareStatement("SELECT * FROM duel_data WHERE uuid = ?");
         preparedStatement.setString(1, uuid);
