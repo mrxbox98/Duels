@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public class Duel implements Listener {
 
@@ -57,28 +56,12 @@ public class Duel implements Listener {
 
     public World world;
 
+    public long startTime;
+
     public Duel(Player inviter, Player invited)
     {
         this.inviter=inviter;
         this.invited=invited;
-        this.oldInviterLocation=inviter.getLocation().clone();
-        this.oldInvitedLocation=invited.getLocation().clone();
-
-        oldInviterInventory=inviter.getInventory();
-        oldInvitedInventory=invited.getInventory();
-
-        oldInviterArmor = inviter.getInventory().getArmorContents().clone();
-        oldInvitedArmor = invited.getInventory().getArmorContents().clone();
-
-        for(int i=0;i<36;i++)
-        {
-            inviterItems[i]=inviter.getInventory().getItem(i);
-        }
-
-        for(int i=0;i<36;i++)
-        {
-            invitedItems[i]=invited.getInventory().getItem(i);
-        }
 
         state=0;
         kit=DuelsPlugin.kits.getDefaultKit();
@@ -96,24 +79,6 @@ public class Duel implements Listener {
     {
         this.inviter=inviter;
         this.invited=invited;
-        this.oldInviterLocation=inviter.getLocation().clone();
-        this.oldInvitedLocation=invited.getLocation().clone();
-
-        oldInviterInventory=inviter.getInventory();
-        oldInvitedInventory=invited.getInventory();
-
-        oldInviterArmor = inviter.getInventory().getArmorContents().clone();
-        oldInvitedArmor = invited.getInventory().getArmorContents().clone();
-
-        for(int i=0;i<36;i++)
-        {
-            inviterItems[i]=inviter.getInventory().getItem(i);
-        }
-
-        for(int i=0;i<36;i++)
-        {
-            invitedItems[i]=invited.getInventory().getItem(i);
-        }
 
         state=0;
         this.kit=kit;
@@ -133,8 +98,6 @@ public class Duel implements Listener {
         {
             return;
         }
-
-        DuelsPlugin.getInstance().getLogger().info(state+"");
 
         inviter.sendMessage(ChatColor.RED+"The duel has timed out!");
 
@@ -171,6 +134,25 @@ public class Duel implements Listener {
 
     public void acceptDuel()
     {
+        this.oldInviterLocation=inviter.getLocation().clone();
+        this.oldInvitedLocation=invited.getLocation().clone();
+
+        oldInviterInventory=inviter.getInventory();
+        oldInvitedInventory=invited.getInventory();
+
+        oldInviterArmor = inviter.getInventory().getArmorContents().clone();
+        oldInvitedArmor = invited.getInventory().getArmorContents().clone();
+
+        for(int i=0;i<36;i++)
+        {
+            inviterItems[i]=inviter.getInventory().getItem(i);
+        }
+
+        for(int i=0;i<36;i++)
+        {
+            invitedItems[i]=invited.getInventory().getItem(i);
+        }
+
         state=1;
 
         inviter.getInventory().clear();
@@ -214,6 +196,7 @@ public class Duel implements Listener {
     public void startFighting()
     {
         state=3;
+        startTime=System.currentTimeMillis();
     }
 
     public void loadInventories()
@@ -270,8 +253,8 @@ public class Duel implements Listener {
                 e.printStackTrace();
             }
 
-            winner.sendMessage(ChatColor.GREEN + "You won the duel!");
-            loser.sendMessage(ChatColor.RED + "You lost the duel!");
+            winner.sendMessage(ChatColor.GREEN + String.format("You won the duel in %s seconds!", (System.currentTimeMillis() - startTime) / 1000));
+            loser.sendMessage(ChatColor.RED + String.format("You lost the duel in %s seconds!", (System.currentTimeMillis()-startTime)/1000));
 
             event.getPlayer().spigot().respawn();
 
@@ -366,13 +349,11 @@ public class Duel implements Listener {
         for(int i=0;i<36;i++)
         {
             inviter.getInventory().setItem(i, inviterItems[i]);
-            DuelsPlugin.instance.getLogger().info(inviterItems[i]==null ? "" : inviterItems[i].toString());
         }
 
         for(int i=0;i<36;i++)
         {
             invited.getInventory().setItem(i, invitedItems[i]);
-            DuelsPlugin.instance.getLogger().info(invitedItems[i]==null ? "" : invitedItems[i].toString());
         }
 
 

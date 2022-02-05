@@ -1,0 +1,5 @@
+mysqlHost: host
+mysqlPort: port
+mysqlDatabase: database
+mysqlUsername: username
+mysqlPassword: password

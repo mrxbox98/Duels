@@ -1,6 +1,5 @@
 package me.mrxbox98.duels;
 
-import com.google.gson.Gson;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
@@ -26,10 +25,8 @@ public class DuelsPlugin extends JavaPlugin {
         }
 
         kits = Kits.getKits();
-        getLogger().info(new Gson().toJson(kits));
 
         arena = Arena.getArena();
-        getLogger().info(new Gson().toJson(arena));
 
         getCommand("duels").setExecutor(new CommandHandler());
         getCommand("duel").setExecutor(new CommandHandler());
