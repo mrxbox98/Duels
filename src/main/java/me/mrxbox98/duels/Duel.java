@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -296,6 +298,32 @@ public class Duel implements Listener {
             {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event)
+    {
+        if(world==null)
+        {
+            return;
+        }
+        if(event.getBlock().getLocation().getWorld().getUID().equals(world.getUID()))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event)
+    {
+        if(world==null)
+        {
+            return;
+        }
+        if(event.getBlock().getLocation().getWorld().getUID().equals(world.getUID()))
+        {
+            event.setCancelled(true);
         }
     }
 
